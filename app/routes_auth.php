@@ -8,44 +8,6 @@ $app->add( function($request, $response, $next) use($app) {
     return $next($request, $response);
 });
 
-// One-time use route to create roles
-$app->get('/setup', function (Request $request, Response $response, $args) use ($app) {
-    $app->getContainer()->sentinel->getRoleRepository()->createModel()->create(array(
-        'name'          => 'Admin',
-        'slug'          => 'admin',
-        'permissions'   => array(
-            'user.create' => true,
-            'user.update' => true,
-            'user.delete' => true
-        ),
-    ));
-
-    $app->getContainer()->sentinel->getRoleRepository()->createModel()->create(array(
-        'name'          => 'User',
-        'slug'          => 'user',
-        'permissions'   => array(
-            'user.update' => true
-        ),
-    ));
-});
-
-$app->get('/admin/users', function (Request $request, Response $response, $args) use ($app) {
-    $loggedUser = $app->getContainer()->sentinel->check();
-
-    if (!$loggedUser) {
-        echo 'You need to be logged in to access this page.';
-
-        return;
-    }
-
-    if (!$loggedUser->hasAccess('user.*')) {
-        echo "You don't have the permission to access this page.";
-
-        return;
-    }
-
-    echo 'Welcome to the admin page.';
-});
 
 $app->get('/logout', function (Request $request, Response $response, $args) use ($app) {
     $app->getContainer()->sentinel->logout();
@@ -54,7 +16,14 @@ $app->get('/logout', function (Request $request, Response $response, $args) use 
 });
 
 $app->get('/login', function (Request $request, Response $response, $args) use ($app) {
-    $app->getContainer()->view->render($response, 'login.html.twig');
+    // CSRF token name and value
+    $name = $request->getAttribute('csrf_name');
+    $value = $request->getAttribute('csrf_value');
+
+    $app->getContainer()->view->render($response, 'login.html.twig', [
+        'csrfName' => $name,
+        'csrfValue' => $value
+    ]);
     return $response;
 });
 

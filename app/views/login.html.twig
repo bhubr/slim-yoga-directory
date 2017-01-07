@@ -7,6 +7,9 @@
             <div class="login-panel panel panel-default">
                 <div class="panel-body">
                     <form action="/login" method="POST" role="form" id="subscriptionForm">
+                        <input type="hidden" name="csrf_name" value="{{ csrfName }}">
+                        <input type="hidden" name="csrf_value" value="{{ csrfValue }}">
+
                         <fieldset>
                             <legend>Sign in</legend>
                             <div class="col-md-12 form-group">

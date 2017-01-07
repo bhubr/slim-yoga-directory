@@ -9,7 +9,9 @@ $app = new \Slim\App();
 //register bindings
 include_once __DIR__.'/../app/bootstrap/container.php';
 
-include_once __DIR__.'/../app/routes.php';
+include_once __DIR__.'/../app/routes_auth.php';
+include_once __DIR__.'/../app/routes_setup.php';
+include_once __DIR__.'/../app/routes_admin.php';
 
 $app->add(new \Slim\Csrf\Guard);
 
