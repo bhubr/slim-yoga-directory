@@ -88,7 +88,16 @@ $app->post('/login', function (Request $request, Response $response, $args) use 
 });
 
 $app->get('/', function (Request $request, Response $response, $args) use ($app) {
-    $app->getContainer()->view->render($response, 'home.html.twig');
+    // CSRF token name and value
+    $name = $request->getAttribute('csrf_name');
+    $value = $request->getAttribute('csrf_value');
+
+    // $this->view->render($response, 'user/signup.twig');
+
+    $app->getContainer()->view->render($response, 'home.html.twig', [
+        'csrfName' => $name,
+        'csrfValue' => $value
+    ]);
     return $response;
 });
 

@@ -11,4 +11,11 @@ include_once __DIR__.'/../app/bootstrap/container.php';
 
 include_once __DIR__.'/../app/routes.php';
 
+$app->add(new \Slim\Csrf\Guard);
+
+$app->add( function( $request, $response, $next ) {
+    session_start();
+    return $next( $request, $response );
+});
+
 $app->run();
