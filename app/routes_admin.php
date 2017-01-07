@@ -5,6 +5,7 @@ use Cartalyst\Sentinel\Users\EloquentUser;
 use Illuminate\Support\Str;
 
 require 'models/Place.php';
+require 'models/School.php';
 
 $app->get('/admin', function (Request $request, Response $response, $args) use ($app) {
     $loggedUser = $app->getContainer()->sentinel->check();
@@ -26,6 +27,9 @@ $app->get('/admin', function (Request $request, Response $response, $args) use (
 });
 
 $app->get('/admin/users', function (Request $request, Response $response, $args) use ($app) {
+    $name = $request->getAttribute('csrf_name');
+    $value = $request->getAttribute('csrf_value');
+
     $loggedUser = $app->getContainer()->sentinel->check();
 
     if (!$loggedUser) {
@@ -44,7 +48,9 @@ $app->get('/admin/users', function (Request $request, Response $response, $args)
 
     // echo 'Welcome to the admin page.';
     $app->getContainer()->view->render($response, 'admin/users.twig', [
-        'entries' => $entries
+        'entries' => $entries,
+        'csrfName' => $name,
+        'csrfValue' => $value
     ]);
 });
 
@@ -75,6 +81,59 @@ $app->post('/admin/places', function (Request $request, Response $response, $arg
     // $country = Country::find($attributes['country_id']);
     try {
         $place = Place::create($attributes);
+        // $place->country()->associate($country);
+        // $place->save();
+    } catch( \Exception $e ) {
+        die( $e->getMessage() . " " . $e->getCode() );
+    }
+    $uri = $request->getUri();
+    return $response = $response->withRedirect($uri); //, 403);
+} );
+
+$app->get('/admin/schools', function (Request $request, Response $response, $args) use ($app) {
+    // $session = new \RKA\Session();
+    // $user = $session->get('user');
+    $name = $request->getAttribute('csrf_name');
+    $value = $request->getAttribute('csrf_value');
+
+    $entries = School::all();
+    // $countries = Country::all();
+
+    // $this->view->offsetSet('user', $user );
+    // $this->view->offsetSet('loggedIn', ! empty($user) );
+    $this->view->render($response, 'admin/schools.twig', [
+        'entries'   => $entries,
+        'csrfName' => $name,
+        'csrfValue' => $value
+
+        // 'countries' => $countries
+    ]);
+    return $response;
+} );
+
+$app->post('/admin/schools', function (Request $request, Response $response, $args) use ($app) {
+    $attributes = $request->getParsedBody();
+    $attributes['slug'] = Str::slug($attributes['name']);
+    // $country = Country::find($attributes['country_id']);
+    try {
+        $school = School::create($attributes);
+        // $place->country()->associate($country);
+        // $place->save();
+    } catch( \Exception $e ) {
+        die( $e->getMessage() . " " . $e->getCode() );
+    }
+    $uri = $request->getUri();
+    return $response = $response->withRedirect($uri); //, 403);
+} );
+
+$app->post('/admin/users', function (Request $request, Response $response, $args) use ($app) {
+    $attributes = $request->getParsedBody();
+    $attributes['password'] = 'toto';
+    $attributes['email'] = Str::slug($attributes['first_name']) . '.' . Str::slug($attributes['last_name']) . '@local.net';
+    // $attributes['slug'] = Str::slug($attributes['name']);
+    // $country = Country::find($attributes['country_id']);
+    try {
+        $place = EloquentUser::create($attributes);
         // $place->country()->associate($country);
         // $place->save();
     } catch( \Exception $e ) {

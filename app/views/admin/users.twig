@@ -16,6 +16,20 @@
       <!-- PAGE CONTENT BEGINS -->
       <div class="row">
         <div class="col-xs-12">
+
+          <!-- QUICK CREATE -->
+          <form class="form-inline" id="quick-create-form" method="POST" action="/admin/users">
+            <input type="hidden" name="csrf_name" value="{{ csrfName }}">
+            <input type="hidden" name="csrf_value" value="{{ csrfValue }}">
+
+            <input name="first_name" type="text" class="input-small" placeholder="First Name" />
+            <input name="last_name" type="text" class="input-small" placeholder="Last Name" />
+            <!-- <input name="email" type="text" class="input-small" placeholder="Email" /> -->
+            <button type="submit" class="btn btn-info btn-sm">
+              <i class="ace-icon fa fa-key bigger-110"></i>Create
+            </button>
+          </form>
+
           <table id="simple-table" class="table  table-bordered table-hover">
             <thead>
               <tr>
