@@ -66,14 +66,13 @@
                 <th class="detail-col">Details</th>
                 <th>Name</th>
                 <th>Slug</th>
-                <th>Address</th>
+                <th>Lieux</th>
                 <th>Map</th>
 
                 <th>
                   <i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i>
                   Update
                 </th>
-                <th class="hidden-480">Status</th>
 
                 <th></th>
               </tr>
@@ -102,13 +101,9 @@
                   <a href="#">{{ entry.name }}</a>
                 </td>
                 <td>{{ entry.slug }}</td>
-                <td>{{ entry.street_address }}, {{ entry.postcode }}, {{ entry.city }}</td>
+                <td><ul>{% for place in entry.places %}<li><a href="{{ place.map_link }}" target="_blank">{{ place.name }}, {{ place.city }}</a></li>{% endfor %}</ul></td>
                 <td>{{ entry._map_embed|raw }}fix</td>
                 <td>Feb 12</td>
-
-                <td class="hidden-480">
-                  <span class="label label-sm label-warning">Expiring</span>
-                </td>
 
                 <td>
                   <div class="hidden-sm hidden-xs btn-group">

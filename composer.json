@@ -10,7 +10,8 @@
         "illuminate/support": "^5.3",
         "symfony/http-foundation": "^2.7",
         "ircmaxell/password-compat": "^1.0",
-        "respect/validation": "^1.1.10"
+        "respect/validation": "^1.1.10",
+        "zeuxisoo/slim-whoops": "0.5.*"
     },
     "autoload": {
     	"psr-4": {
