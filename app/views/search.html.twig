@@ -9,7 +9,10 @@ ul#list-cities {
 }
 ul#list-cities li {
     list-style-type: none;
-    padding: 0;
+    padding: 1px 0 1px 4px;
+}
+ul#list-cities li:hover {
+    background-color: #ccc;
 }
 </style>
 {% endblock %}
@@ -17,7 +20,7 @@ ul#list-cities li {
 {% block content %}
 <div class="container">
     <section class="signup_form row">
-        <div class="col-md-6 col-md-offset-3">
+        <div class="col-md-8 col-md-offset-2">
             <div class="login-panel panel panel-default">
                 <div class="panel-body">
                     <form action="/cities" method="GET" role="form" id="citySearchForm">
@@ -32,7 +35,7 @@ ul#list-cities li {
                         </fieldset>
 
                         <div class="col-md-12 form-group">
-                            <ul id="list-cities">
+                            <ul id="list-cities" class="hidden">
                             </ul>
                         </div>
 
@@ -49,6 +52,20 @@ ul#list-cities li {
 <script src="/assets/front/jquery.quicksearch.js"></script>
 <script>
 var qs;
+var input;
+var list;
+var state = {
+    cityChosen: null
+};
+
+function bindListItemEvents() {
+    $('ul#list-cities li').click( function() {
+        var $item = $(this);
+        state.cityChosen = $item.data('id');
+        input.val($item.html()).attr('readonly', 'readonly');
+        list.addClass('hidden');
+    } );
+}
 
 function fireAjaxSearch(searchTerm) {
     searchTerm = searchTerm !== undefined ? searchTerm : '';
@@ -57,23 +74,33 @@ function fireAjaxSearch(searchTerm) {
         'type': 'GET',
         'dataType': 'json',
         'success': function (data) {
+            list.removeClass('hidden');
             $('ul#list-cities li').remove();
-            console.log(data);
             for (i in data['items']) {
-                $('ul#list-cities').append('<li>' + data['items'][i] + '</li>');
+                var item = data['items'][i];
+                $('ul#list-cities').append('<li data-id="' + item['id'] + '">' + item['name'] + '</li>');
             }
+            bindListItemEvents();
             qs.cache();
         }
     });
 }
 $(document).ready( function() {
-    var $input = $('input#search-list');
-    qs = $input.quicksearch('ul#list-cities li');
-    fireAjaxSearch();
+    input = $('input#search-list');
+    list = $('ul#list-cities');
+    input.on('click', function() {
+        if( input.attr('readonly') === 'readonly' ) {
+            input.attr('readonly', false);
+            input.val('');
+            input.trigger('input');
+            state.cityChosen = null;
+        }
+    });
+    qs = input.quicksearch('ul#list-cities li');
+    // fireAjaxSearch();
 
-    $input.on('input', function() {
-        // console.log(this);
-        fireAjaxSearch( $input.val() );
+    input.on('input', function() {
+        fireAjaxSearch( input.val() );
     });
 });
 

@@ -18,7 +18,10 @@ $app->get('/cities', function (Request $request, Response $response, $args) use 
     $searchTerm = $request->getParam('s');
     $searchResults = City::where('name', 'LIKE', "{$searchTerm}%")->limit(10)->get();
     $mappedResults = $searchResults->map( function( $item ) {
-        return $item->name;
+        return [
+            'id' => $item->id,
+            'name' => $item->name
+        ];
     } );
     $data = [
         'items' => $mappedResults
