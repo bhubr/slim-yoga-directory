@@ -34,7 +34,7 @@ function ajaxSearch( _inputId, _listId, _searchWhat, _searchOnStart, _selectCall
               $(listItem).data('attrs', item);
           }
           bindListItemEvents();
-          qs.cache();
+          // qs.cache();
         }
       });
     }

@@ -1,6 +1,7 @@
 <?php
 require 'db_settings.php';
-
+require __DIR__ . '/../TwigComponents.php';
+require __DIR__ . '/../Component.php';
 $container = $app->getContainer();
 
 // Register Twig
@@ -12,6 +13,7 @@ $container['view'] = function ($container) {
     // Instantiate and add Slim specific extension
     $basePath = rtrim(str_ireplace('index.php', '', $container['request']->getUri()->getBasePath()), '/');
     $view->addExtension(new Slim\Views\TwigExtension($container['router'], $basePath));
+    $view->addExtension(TwigComponents::getInstance());
     return $view;
 };
 
