@@ -16,12 +16,7 @@ class InputComponent implements ComponentInterface {
     public function renderHtml() {
         extract($this->properties);
         $output = '';
-        $output .=  "Input component";
-        $output .=  "<ul class='pouet-component'>";
-        foreach( $this->properties as $k => $v ) {
-            $output .= "<li>$k => $v</li>";
-        }
-        $output .= "</ul>";
+        $output .=  "<h4>Input component #$inputId</h4>";
         $output .= "<input id=\"$inputId\" class=\"form-control\" placeholder=\"$placeholder\" name=\"name\" type=\"name\" value=\"\">";
         $output .= "<ul id=\"$listId\" class=\"list\"></ul>";
         return $output;

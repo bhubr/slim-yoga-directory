@@ -7,17 +7,17 @@ $app->get('/search', function (Request $request, Response $response, $args) use 
     $name = $request->getAttribute('csrf_name');
     $value = $request->getAttribute('csrf_value');
 
-    $component1 = new Component([
-        'id'   => 'roberto-div',
-        'name' => 'Roberto',
-        'age'  => 50
-    ]);
+    // $component1 = new Component([
+    //     'id'   => 'roberto-div',
+    //     'name' => 'Roberto',
+    //     'age'  => 50
+    // ]);
 
-    $component2 = new Component([
-        'id'   => 'julia-div',
-        'name' => 'Julia',
-        'age'  => 34
-    ]);
+    // $component2 = new Component([
+    //     'id'   => 'julia-div',
+    //     'name' => 'Julia',
+    //     'age'  => 34
+    // ]);
 
     $component3 = new InputComponent([
         'type' => 'InputComponent',
@@ -26,12 +26,9 @@ $app->get('/search', function (Request $request, Response $response, $args) use 
         'placeholder'   => 'I am input #search-cities-2',
     ]);
 
-    // $component1->renderHtml();
-    // $component2->renderHtml();
-    // die();
     $components = TwigComponents::getInstance();
-    $components->register( 'c1', $component1 );
-    $components->register( 'c2', $component2 );
+    // $components->register( 'c1', $component1 );
+    // $components->register( 'c2', $component2 );
     $components->register( 'c3', $component3 );
 
     $app->getContainer()->view->render($response, 'search.html.twig', [
