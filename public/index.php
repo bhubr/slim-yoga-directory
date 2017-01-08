@@ -14,6 +14,7 @@ $app = new \Slim\App([
 // Put this 1st: https://github.com/zeuxisoo/php-slim-whoops/issues/12
 $app->add(new \Zeuxisoo\Whoops\Provider\Slim\WhoopsMiddleware);
 
+require_once '../app/models/City.php';
 // Register bindings
 include_once __DIR__.'/../app/bootstrap/container.php';
 // Register routes
@@ -21,6 +22,7 @@ include_once __DIR__.'/../app/routes_auth.php';
 include_once __DIR__.'/../app/routes_setup.php';
 include_once __DIR__.'/../app/routes_admin.php';
 require_once __DIR__.'/../app/routes_utils.php';
+require_once __DIR__.'/../app/routes_search.php';
 
 // Register middlewares
 $app->add(new \Slim\Csrf\Guard);

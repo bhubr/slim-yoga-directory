@@ -1,0 +1,81 @@
+{% extends "app.html.twig" %}
+
+{% block styles %}
+<style>
+ul#list-cities {
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    padding: 5px;
+}
+ul#list-cities li {
+    list-style-type: none;
+    padding: 0;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="signup_form row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="login-panel panel panel-default">
+                <div class="panel-body">
+                    <form action="/cities" method="GET" role="form" id="citySearchForm">
+                        <input type="hidden" name="csrf_name" value="{{ csrfName }}">
+                        <input type="hidden" name="csrf_value" value="{{ csrfValue }}">
+
+                        <fieldset>
+                            <legend>Search city</legend>
+                            <div class="col-md-12 form-group">
+                                <input id="search-list" class="form-control" placeholder="Enter city name" name="name" type="name" value="">
+                            </div>
+                        </fieldset>
+
+                        <div class="col-md-12 form-group">
+                            <ul id="list-cities">
+                            </ul>
+                        </div>
+
+                        <!-- <button class="btn btn-primary mbtn" style="margin-left: 15px;">Login</button> -->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/assets/front/jquery.quicksearch.js"></script>
+<script>
+var qs;
+
+function fireAjaxSearch(searchTerm) {
+    searchTerm = searchTerm !== undefined ? searchTerm : '';
+    $.ajax({
+        'url': '/cities?s=' + searchTerm,
+        'type': 'GET',
+        'dataType': 'json',
+        'success': function (data) {
+            $('ul#list-cities li').remove();
+            console.log(data);
+            for (i in data['items']) {
+                $('ul#list-cities').append('<li>' + data['items'][i] + '</li>');
+            }
+            qs.cache();
+        }
+    });
+}
+$(document).ready( function() {
+    var $input = $('input#search-list');
+    qs = $input.quicksearch('ul#list-cities li');
+    fireAjaxSearch();
+
+    $input.on('input', function() {
+        // console.log(this);
+        fireAjaxSearch( $input.val() );
+    });
+});
+
+</script>
+{% endblock %}

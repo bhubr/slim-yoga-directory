@@ -1,2 +1,3 @@
 vendor
 yogadir_dev*.sql
+app/bootstrap/db_settings.php

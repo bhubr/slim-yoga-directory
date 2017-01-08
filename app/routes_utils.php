@@ -2,7 +2,7 @@
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
-require 'models/City.php';
+
 $app->get('/import-villes', function (Request $request, Response $response, $args) use ($app) {
     $fh = fopen('../villes_france_head.csv', 'r');
     // var_dump($fh);die();
