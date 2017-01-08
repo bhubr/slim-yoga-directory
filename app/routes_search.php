@@ -33,8 +33,38 @@ $searchClosure = function (Request $request, Response $response, $args) use ($ap
     }
     $typeClass = $validTypes[$searchWhat];
 
-    $searchTerm = $request->getParam('s');
-    $searchResults = $typeClass::where('name', 'LIKE', "{$searchTerm}%")->limit(10)->get();
+    $searchTerms = $request->getParams();
+    if (isset($searchTerms['fields'])) {
+        unset($searchTerms['fields']);
+    }
+
+    $query = $typeClass;
+    foreach( $searchTerms as $key => $val ) {
+        if(empty($val)) continue;
+        if( preg_match('/.*_?id/', $key) ) {
+            $query = is_string( $query ) ? $query::where( $key, '=', (int)$val ) :
+                $query->where( $key, '=', (int)$val );
+        }
+        else {
+            $query = is_string( $query ) ? $query::where( $key, 'LIKE', "{$val}%" ) :
+                $query->where( $key, 'LIKE', "%{$val}%" );
+        }
+    }
+    try {
+        $searchResults = is_string( $query ) ? $query::limit(10)->get() :
+            $query->limit(10)->get();
+    } catch( \Exception $e ) {
+        if( is_a($e, 'Illuminate\Database\QueryException') && $e->getCode() === '42S22' ) {
+            $error = "Queried object {$typeClass}: invalid attribute";
+            $pattern = '/.*Unknown column \'(.*)\' in.*/';
+            preg_match( $pattern, $e->getMessage(), $matches );
+            if( count( $matches ) === 2 ) $error .= " '" . $matches[1] . "'";
+        }
+        else {
+            $error = $e->getCode() . ':' . $e->getMessage();
+        }
+        return $response->write( $error )->withStatus( 400 );
+    }
     $mappedResults = $searchResults->map( function( $item ) use($fields) {
         $mapped = [
             'id' => $item->id
