@@ -34,8 +34,6 @@ ul.list li:hover {
           <section class="search-form row">
             <div class="col-md-6">
               <form action="/cities" method="GET" role="form" id="citySearchForm">
-                <!-- <input type="hidden" name="csrf_name" value="{{ csrfName }}">
-                <input type="hidden" name="csrf_value" value="{{ csrfValue }}"> -->
 
                 <fieldset>
                   <legend>Search city</legend>
@@ -52,8 +50,6 @@ ul.list li:hover {
 
             <div class="col-md-6">
               <form action="/styles" method="GET" role="form" id="styleSearchForm">
-                <!-- <input type="hidden" name="csrf_name" value="{{ csrfName }}">
-                <input type="hidden" name="csrf_value" value="{{ csrfValue }}"> -->
 
                 <fieldset>
                   <legend>Search style</legend>
@@ -74,6 +70,20 @@ ul.list li:hover {
         </div> <!-- .panel-body -->
       </div> <!-- .panel -->
     </div> <!-- .col-md-10 -->
+
+    <div class="col-md-10 col-md-offset-1">
+      <div class="login-panel panel panel-default">
+        <div class="panel-body">
+        <h3>Search results</h3>
+        <ul id="search-results" class="list">
+        </ul>
+
+        <input id="search-place" name="city_id" type="hidden" />
+
+        </div> <!-- .panel-body -->
+      </div> <!-- .panel -->
+    </div> <!-- .col-md-10 -->
+
   </div> <!-- .panel-wrapper -->
 </div> <!-- .container -->
 
@@ -85,36 +95,40 @@ ul.list li:hover {
 <script>
 
 $(document).ready( function() {
-    // input = $('input#search-city');
-    // list = $('ul#list-cities');
-    // input.on('click', function() {
-    //     if( input.attr('readonly') === 'readonly' ) {
-    //         input.attr('readonly', false);
-    //         input.val('');
-    //         input.trigger('input');
-    //         state.cityChosen = null;
-    //     }
-    // });
+    input = $('input#search-city');
+    list = $('ul#list-cities');
+    input.on('click', function() {
+        if( input.attr('readonly') === 'readonly' ) {
+            input.attr('readonly', false);
+            input.val('');
+            input.trigger('input');
+            // state.cityChosen = null;
+        }
+    });
+
     ajaxSearch( 'search-city', 'list-cities', 'cities', false, function($item, input, list, state) {
-      // var $item = $(this);
       state.cityChosen = $item.data('id');
-      console.log(state);
       input.val($item.html()).attr('readonly', 'readonly');
       list.addClass('hidden');
+      $('#search-place').val($item.data('id'));
+      $('#search-place').trigger('input');
+
     }, {
       cityChosen: null
     });
 
     ajaxSearch( 'search-style', 'list-styles', 'styles', true, function($item, input, list, state) {
-      console.log($item, input, list, state);
-      // var $item = $(this);
-      // console.log($item);
       var id = $item.data('id');
       var name = $item.html();
-      console.log(id, name);
       state.selectedStyles.append('<li data-id="' + id + '"><span class="label label-primary">' + name + '</span></li>');
-      // state.selectedStyles.append('<li>toto</li>');
     }, { selectedStyles: $( '#selected-styles' ) } );
+
+    ajaxSearch( 'search-place', 'search-results', 'places', true, function($item, input, list, state) {
+      var id = $item.data('id');
+      var name = $item.html();
+      // $('#search-results li').show();
+      // state.selectedStyles.append('<li data-id="' + id + '"><span class="label label-primary">' + name + '</span></li>');
+    }, {  } );
 
 });
 

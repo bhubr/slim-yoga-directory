@@ -3,24 +3,25 @@ function ajaxSearch( _inputId, _listId, _searchWhat, _searchOnStart, _selectCall
   (function( inputId, listId, searchWhat, searchOnStart, selectCallback, state, options ) {
     var input = $('#' + inputId);
     var list = $('#' + listId);
-    var qs = input.quicksearch('ul#' + listId + ' li');
+    // var qs = input.quicksearch('ul#' + listId + ' li');
 
     function bindListItemEvents() {
       list.find('li').click( function(e) {
-        console.log(e);
         selectCallback( $(e.target), input, list, state );
       } );
     }
 
-    function fireAjaxSearch(searchTerm) {
-      var searchTerm = searchTerm !== undefined ? searchTerm : '';
+    function fireAjaxSearch() {
+      // var searchTerm = searchTerm !== undefined ? searchTerm : '';
+      var searchTerm = input.attr( 'name' ) + '=' + input.val();
       var fields = (!!options && !!(options.fields) ) ?
         '&fields=' + options.fields.join(',') : '';
       $.ajax({
-        'url': '/search/' + searchWhat + '?s=' + searchTerm + fields,
+        'url': '/search/' + searchWhat + '?' + searchTerm + fields,
         'type': 'GET',
         'dataType': 'json',
         'success': function (data) {
+          // console.log(data);
           list.removeClass('hidden');
           list.find('li').remove();
           for (var i in data['items']) {
@@ -28,7 +29,8 @@ function ajaxSearch( _inputId, _listId, _searchWhat, _searchOnStart, _selectCall
               var id = item['id'];
               var listItem;
               delete item.id;
-              listItem = $('<li data-id="' + id + '" data-ssattrs="' + JSON.stringify(item) + '">' + item['name'] + '</li>').appendTo(list);
+              listItem = $('<li data-id="' + id + '">' + item['name'] + '</li>').appendTo(list).css('display', 'block');
+              // console.log('<li data-id="' + id + '">' + item['name'] + '</li>', item, list, listItem);
               $(listItem).data('attrs', item);
           }
           bindListItemEvents();
@@ -37,9 +39,7 @@ function ajaxSearch( _inputId, _listId, _searchWhat, _searchOnStart, _selectCall
       });
     }
       
-    input.on('input', function() {
-      fireAjaxSearch( input.val() );
-    });
+    input.on('input', fireAjaxSearch);
 
     if( searchOnStart ) {
       fireAjaxSearch();
