@@ -2,16 +2,16 @@
 
 {% block styles %}
 <style>
-ul#list-cities {
+ul.list {
     border: 1px solid #ddd;
     border-radius: 2px;
     padding: 5px;
 }
-ul#list-cities li {
+ul.list li {
     list-style-type: none;
     padding: 1px 0 1px 4px;
 }
-ul#list-cities li:hover {
+ul.list li:hover {
     background-color: #ccc;
 }
 </style>
@@ -19,33 +19,55 @@ ul#list-cities li:hover {
 
 {% block content %}
 <div class="container">
-    <section class="signup_form row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="login-panel panel panel-default">
-                <div class="panel-body">
-                    <form action="/cities" method="GET" role="form" id="citySearchForm">
-                        <input type="hidden" name="csrf_name" value="{{ csrfName }}">
-                        <input type="hidden" name="csrf_value" value="{{ csrfValue }}">
+  <div class="panel-wrapper row">
+    <div class="col-md-10 col-md-offset-1">
+      <div class="login-panel panel panel-default">
+        <div class="panel-body">
 
-                        <fieldset>
-                            <legend>Search city</legend>
-                            <div class="col-md-12 form-group">
-                                <input id="search-list" class="form-control" placeholder="Enter city name" name="name" type="name" value="">
-                            </div>
-                        </fieldset>
+          <section class="search-form row">
+            <div class="col-md-6">
+              <form action="/cities" method="GET" role="form" id="citySearchForm">
+                <!-- <input type="hidden" name="csrf_name" value="{{ csrfName }}">
+                <input type="hidden" name="csrf_value" value="{{ csrfValue }}"> -->
 
-                        <div class="col-md-12 form-group">
-                            <ul id="list-cities" class="hidden">
-                            </ul>
-                        </div>
+                <fieldset>
+                  <legend>Search city</legend>
+                  <div class="col-md-12 form-group">
+                    <input id="search-city" class="form-control" placeholder="Enter city name" name="name" type="name" value="">
+                  </div>
+                </fieldset>
 
-                        <!-- <button class="btn btn-primary mbtn" style="margin-left: 15px;">Login</button> -->
-                    </form>
+                <div class="col-md-12 form-group">
+                  <ul id="list-cities" class="list hidden"></ul>
                 </div>
+              </form>
             </div>
-        </div>
-    </section>
-</div>
+
+            <div class="col-md-6">
+              <form action="/styles" method="GET" role="form" id="styleSearchForm">
+                <!-- <input type="hidden" name="csrf_name" value="{{ csrfName }}">
+                <input type="hidden" name="csrf_value" value="{{ csrfValue }}"> -->
+
+                <fieldset>
+                  <legend>Search style</legend>
+                  <div class="col-md-12 form-group">
+                    <input id="search-style" class="form-control" placeholder="Enter style" name="name" type="name" value="">
+                  </div>
+                </fieldset>
+
+                <div class="col-md-12 form-group">
+                  <ul id="list-styles" class="list "></ul>
+                </div>
+              </form>
+            </div>
+          </section>
+
+        </div> <!-- .panel-body -->
+      </div> <!-- .panel -->
+    </div> <!-- .col-md-10 -->
+  </div> <!-- .panel-wrapper -->
+</div> <!-- .container -->
+
 {% endblock %}
 
 {% block scripts %}
@@ -86,7 +108,7 @@ function fireAjaxSearch(searchTerm) {
     });
 }
 $(document).ready( function() {
-    input = $('input#search-list');
+    input = $('input#search-city');
     list = $('ul#list-cities');
     input.on('click', function() {
         if( input.attr('readonly') === 'readonly' ) {
