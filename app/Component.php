@@ -6,11 +6,6 @@
  *
  * @copyright Copyright (c) 2017 Benoit Hubert
  */
-interface ComponentInterface {
-    public function renderHtml();
-    public static function getStyles();
-    public function renderScripts();
-}
 
 class Component implements ComponentInterface {
 

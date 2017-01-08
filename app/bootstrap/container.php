@@ -1,7 +1,9 @@
 <?php
 require 'db_settings.php';
 require __DIR__ . '/../TwigComponents.php';
+require __DIR__ . '/../ComponentInterface.php';
 require __DIR__ . '/../Component.php';
+require __DIR__ . '/../InputComponent.php';
 $container = $app->getContainer();
 
 // Register Twig

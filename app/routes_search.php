@@ -19,12 +19,20 @@ $app->get('/search', function (Request $request, Response $response, $args) use 
         'age'  => 34
     ]);
 
+    $component3 = new InputComponent([
+        'type' => 'InputComponent',
+        'inputId'   => 'search-cities-2',
+        'listId'   => 'list-cities-2',
+        'placeholder'   => 'I am input #search-cities-2',
+    ]);
+
     // $component1->renderHtml();
     // $component2->renderHtml();
     // die();
     $components = TwigComponents::getInstance();
     $components->register( 'c1', $component1 );
     $components->register( 'c2', $component2 );
+    $components->register( 'c3', $component3 );
 
     $app->getContainer()->view->render($response, 'search.html.twig', [
         'csrfName' => $name,

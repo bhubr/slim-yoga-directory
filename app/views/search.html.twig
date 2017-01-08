@@ -1,27 +1,7 @@
 {% extends "app.html.twig" %}
 
 {% block styles %}
-<style>
-ul.inline-list {
-  padding: 14px;
-}
-ul.inline-list li {
-  display: inline;
-  margin-left: 2px;
-}
-ul.list {
-  border: 1px solid #ddd;
-  border-radius: 2px;
-  padding: 5px;
-}
-ul.list li {
-  list-style-type: none;
-  padding: 1px 0 1px 4px;
-}
-ul.list li:hover {
-  background-color: #ccc;
-}
-</style>
+
 
 {{ renderStyles() }}
 {% endblock %}
@@ -85,6 +65,8 @@ ul.list li:hover {
         {{ renderHtml('c1') }}
 
         {{ renderHtml('c2') }}
+
+        {{ renderHtml('c3') }}
 
         </div> <!-- .panel-body -->
       </div> <!-- .panel -->
