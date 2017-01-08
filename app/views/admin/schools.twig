@@ -98,7 +98,7 @@
                 </td>
 
                 <td>
-                  <a href="#">{{ entry.name }}</a>
+                  <a href="/admin/schools/{{ entry.slug }}">{{ entry.name }}</a>
                 </td>
                 <td>{{ entry.slug }}</td>
                 <td><ul>{% for place in entry.places %}<li><a href="{{ place.map_link }}" target="_blank">{{ place.name }}, {{ place.city.name }}</a></li>{% endfor %}</ul></td>

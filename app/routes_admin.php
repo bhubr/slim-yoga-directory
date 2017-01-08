@@ -72,6 +72,22 @@ $app->get('/admin/places', function (Request $request, Response $response, $args
     return $response;
 } );
 
+$app->get('/admin/places/{id}', function (Request $request, Response $response, $args) use ($app) {
+    $route = $request->getAttribute('route');
+    $id = $route->getArgument('id');
+    $entry = Place::find($id);
+
+    $name = $request->getAttribute('csrf_name');
+    $value = $request->getAttribute('csrf_value');
+
+    $this->view->render($response, 'admin/place_edit.twig', [
+        'entry'   => $entry,
+        'csrfName' => $name,
+        'csrfValue' => $value
+    ]);
+    return $response;
+} );
+
 $app->post('/admin/places', function (Request $request, Response $response, $args) use ($app) {
     $attributes = $request->getParsedBody();
     $attributes['slug'] = Str::slug($attributes['name']);
@@ -123,6 +139,24 @@ $app->post('/admin/schools', function (Request $request, Response $response, $ar
     return $response = $response->withRedirect($uri); //, 403);
 } );
 
+$app->get('/admin/schools/{slug}', function (Request $request, Response $response, $args) use ($app) {
+    $route = $request->getAttribute('route');
+    $slug = $route->getArgument('slug');
+    $entry = School::where('slug', '=', $slug)->first();
+
+    $name = $request->getAttribute('csrf_name');
+    $value = $request->getAttribute('csrf_value');
+
+    $this->view->render($response, 'admin/school_edit.twig', [
+        'entry'   => $entry,
+        'csrfName' => $name,
+        'csrfValue' => $value
+    ]);
+    return $response;
+} );
+
+
+
 $app->post('/admin/users', function (Request $request, Response $response, $args) use ($app) {
     $attributes = $request->getParsedBody();
     $attributes['password'] = 'toto';
@@ -139,6 +173,7 @@ $app->post('/admin/users', function (Request $request, Response $response, $args
     $uri = $request->getUri();
     return $response = $response->withRedirect($uri); //, 403);
 } );
+
 
 $app->get('/admin/styles', function (Request $request, Response $response, $args) use ($app) {
     $name = $request->getAttribute('csrf_name');

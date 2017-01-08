@@ -1,0 +1,124 @@
+{% extends "admin/layout.html" %}
+
+{% block content %}
+  <div class="page-header">
+    <h1>
+      Edit place
+      <small>
+        <i class="ace-icon fa fa-angle-double-right"></i>
+        overview &amp; stats
+      </small>
+    </h1>
+  </div><!-- /.page-header -->
+
+  <div class="row">
+    <div class="col-xs-12">
+      <!-- PAGE CONTENT BEGINS -->
+      <div class="row">
+        <div class="col-xs-12">
+
+          <!-- QUICK CREATE -->
+          <form class="form form-stacked" id="quick-create-form" method="POST" action="/admin/places/{{ entry.id }}">
+            <input type="hidden" name="csrf_name" value="{{ csrfName }}">
+            <input type="hidden" name="csrf_value" value="{{ csrfValue }}">
+
+            <input name="name" type="text" class="input-small" value="{{ entry.name }}" placeholder="Name" />
+            <input name="street_address" type="text" class="input-small" value="{{ entry.street_address }}" placeholder="Address" />
+            <input name="postcode" type="text" class="input-small" value="{{ entry.postcode }}" placeholder="Post Code" />
+            <input id="city" type="text" class="input-small" value="{{ entry.city.name }}" placeholder="City" />
+            <input id="city_id" name="city_id" type="text" class="input-small" value="{{ entry.city_id }}" placeholder="City ID" />
+            <input name="phone" type="text" class="input-small" value="{{ entry.phone }}" placeholder="Phone" />
+            <select name="country_id" class="input-small">
+              <option value="1">France</option>
+            </select>
+            <select name="state_id" class="input-small">
+              <option value="1">Midy-Pyrénées</option>
+            </select>
+            <input name="latitude" type="text" class="input-small" value="{{ entry.latitude }}" placeholder="Lat" />
+            <input name="longitude" type="text" class="input-small" value="{{ entry.longitude }}" placeholder="Lon" />
+            <input name="map_link" type="text" class="input-small" value="{{ entry.map_link }}" placeholder="Map link" />
+            <textarea name="map_embed">{{ entry.map_embed }}</textarea>
+<!--             <select name="country_id">
+              {% for country in countries %}
+                <option value="{{ country.id }}">{{ country.name }}</option>
+              {% endfor %}
+            </select>
+ -->
+            <button type="submit" class="btn btn-info btn-sm">
+              <i class="ace-icon fa fa-key bigger-110"></i>Update
+            </button>
+          </form>
+          <ul id="list-cities" class="list hidden"></ul>
+
+
+        </div><!-- /.span -->
+      </div><!-- /.row -->
+
+      <!-- PAGE CONTENT ENDS -->
+    </div><!-- /.col -->
+  </div><!-- /.row -->
+{% endblock %}
+
+{% block custom_js %}
+<script src="/assets/common/js/jquery.quicksearch.js"></script>
+<script src="/assets/common/js/ajaxsearch.js"></script>
+<script>
+
+  $(document).ready(function() {
+    // var parser = new DOMParser();
+
+    $('.show-details-btn').on('click', function(e) {
+      e.preventDefault();
+      $(this).closest('tr').next().toggleClass('open');
+      $(this).find(ace.vars['.icon']).toggleClass('fa-angle-double-down').toggleClass('fa-angle-double-up');
+    });
+
+    $('.quick-edit-form').on('submit', function(e) {
+      e.preventDefault();
+      var form = $(e.target);
+      var pid = form.data('pid');
+      $.post(form.attr('action'), form.serialize(), data => {
+        console.log('#thumb-' + pid, $('#thumb-' + pid), data.image_url);
+        $('#thumb-' + pid).attr('src', data.image_url);
+      }, 'json');
+    });
+
+    ajaxSearch( 'city', 'list-cities', 'cities', false, function($item, input, list, state) {
+      var data = $item.data('attrs');
+      var fieldNames = ['postcode', 'latitude', 'longitude'];
+      var query = encodeURI( $('input[name="street_address"]').val() ) + '%2C' + data.slug;
+      var osmQuery = 'www.openstreetmap.org/search?query=' + query + '#map=14/' + data.latitude + '/' + data.longitude;
+      fieldNames.forEach( function(name) {
+        $('input[name="' + name + '"]').val( data[name] );
+      });
+      $('input[name="city_id"]').val( $item.data('id') );
+      $('input[name="map_link"]').val( osmQuery );
+      state.cityChosen = $item.data('id');
+    }, {
+      cityChosen: null
+    }, { fields: ['name', 'slug', 'postcode', 'latitude', 'longitude'] });
+
+    $('textarea[name="map_embed"]').on( 'input', function() {
+      var html = $(this).val();
+      var el = document.createElement( 'html' );
+      var links;
+      var hrefNode;
+      var link;
+      var segments;
+      var latitude;
+      var longitude;
+
+      el.innerHTML = html;
+      links = el.getElementsByTagName( 'a' ); // Live NodeList of your anchor elements
+      href = links[0].attributes.getNamedItem('href');
+      link = href.nodeValue;
+      segments = link.split('/');
+      longitude = segments.pop();
+      latitude = segments.pop();
+      $('input[name="latitude"]').val(latitude);
+      $('input[name="longitude"]').val(longitude);
+    });
+
+  });
+</script>
+{% endblock %}
