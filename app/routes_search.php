@@ -14,9 +14,21 @@ $app->get('/search', function (Request $request, Response $response, $args) use 
     return $response;
 });
 
-$app->get('/cities', function (Request $request, Response $response, $args) use ($app) {
+$searchClosure = function (Request $request, Response $response, $args) use ($app) {
+    $route = $request->getAttribute('route');
+    $searchWhat = $route->getArgument('what');
+
+    $validTypes = [
+        'cities' => 'City',
+        'styles' => 'Style'
+    ];
+    if( ! array_key_exists($searchWhat, $validTypes) ) {
+        return $response->write('Not Found')->withStatus(404);
+    }
+    $typeClass = $validTypes[$searchWhat];
+
     $searchTerm = $request->getParam('s');
-    $searchResults = City::where('name', 'LIKE', "{$searchTerm}%")->limit(10)->get();
+    $searchResults = $typeClass::where('name', 'LIKE', "{$searchTerm}%")->limit(10)->get();
     $mappedResults = $searchResults->map( function( $item ) {
         return [
             'id' => $item->id,
@@ -27,4 +39,6 @@ $app->get('/cities', function (Request $request, Response $response, $args) use 
         'items' => $mappedResults
     ];
     return $response->withJson($data);
-});
+};
+
+$app->get('/search/{what}', $searchClosure);

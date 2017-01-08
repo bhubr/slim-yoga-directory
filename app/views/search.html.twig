@@ -2,17 +2,24 @@
 
 {% block styles %}
 <style>
+ul.inline-list {
+  padding: 14px;
+}
+ul.inline-list li {
+  display: inline;
+  margin-left: 2px;
+}
 ul.list {
-    border: 1px solid #ddd;
-    border-radius: 2px;
-    padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  padding: 5px;
 }
 ul.list li {
-    list-style-type: none;
-    padding: 1px 0 1px 4px;
+  list-style-type: none;
+  padding: 1px 0 1px 4px;
 }
 ul.list li:hover {
-    background-color: #ccc;
+  background-color: #ccc;
 }
 </style>
 {% endblock %}
@@ -55,6 +62,8 @@ ul.list li:hover {
                   </div>
                 </fieldset>
 
+                <ul id="selected-styles" class="inline-list"></ul>
+
                 <div class="col-md-12 form-group">
                   <ul id="list-styles" class="list "></ul>
                 </div>
@@ -73,57 +82,81 @@ ul.list li:hover {
 {% block scripts %}
 <script src="/assets/front/jquery.quicksearch.js"></script>
 <script>
-var qs;
-var input;
-var list;
-var state = {
-    cityChosen: null
-};
+function ajaxSearch( _inputId, _listId, _searchWhat, _searchOnStart, _selectCallback, _state ) {
+  (function( inputId, listId, searchWhat, searchOnStart, selectCallback, state ) {
+    var input = $('#' + inputId);
+    var list = $('#' + listId);
+    var qs = input.quicksearch('ul#' + listId + ' li');
 
-function bindListItemEvents() {
-    $('ul#list-cities li').click( function() {
-        var $item = $(this);
-        state.cityChosen = $item.data('id');
-        input.val($item.html()).attr('readonly', 'readonly');
-        list.addClass('hidden');
-    } );
-}
+    function bindListItemEvents() {
+      list.find('li').click( function(e) {
+        console.log(e);
+        selectCallback( $(e.target), input, list, state );
+      } );
+    }
 
-function fireAjaxSearch(searchTerm) {
-    searchTerm = searchTerm !== undefined ? searchTerm : '';
-    $.ajax({
-        'url': '/cities?s=' + searchTerm,
+    function fireAjaxSearch(searchTerm) {
+      searchTerm = searchTerm !== undefined ? searchTerm : '';
+      $.ajax({
+        'url': '/search/' + searchWhat + '?s=' + searchTerm,
         'type': 'GET',
         'dataType': 'json',
         'success': function (data) {
-            list.removeClass('hidden');
-            $('ul#list-cities li').remove();
-            for (i in data['items']) {
-                var item = data['items'][i];
-                $('ul#list-cities').append('<li data-id="' + item['id'] + '">' + item['name'] + '</li>');
-            }
-            bindListItemEvents();
-            qs.cache();
+          list.removeClass('hidden');
+          list.find('li').remove();
+          for (i in data['items']) {
+              var item = data['items'][i];
+              list.append('<li data-id="' + item['id'] + '">' + item['name'] + '</li>');
+          }
+          bindListItemEvents();
+          qs.cache();
         }
-    });
-}
-$(document).ready( function() {
-    input = $('input#search-city');
-    list = $('ul#list-cities');
-    input.on('click', function() {
-        if( input.attr('readonly') === 'readonly' ) {
-            input.attr('readonly', false);
-            input.val('');
-            input.trigger('input');
-            state.cityChosen = null;
-        }
-    });
-    qs = input.quicksearch('ul#list-cities li');
-    // fireAjaxSearch();
-
+      });
+    }
+      
     input.on('input', function() {
-        fireAjaxSearch( input.val() );
+      fireAjaxSearch( input.val() );
     });
+
+    if( searchOnStart ) {
+      fireAjaxSearch();
+    }
+  })( _inputId, _listId, _searchWhat, _searchOnStart, _selectCallback, _state );
+}
+
+
+$(document).ready( function() {
+    // input = $('input#search-city');
+    // list = $('ul#list-cities');
+    // input.on('click', function() {
+    //     if( input.attr('readonly') === 'readonly' ) {
+    //         input.attr('readonly', false);
+    //         input.val('');
+    //         input.trigger('input');
+    //         state.cityChosen = null;
+    //     }
+    // });
+    ajaxSearch( 'search-city', 'list-cities', 'cities', false, function($item, input, list, state) {
+      // var $item = $(this);
+      state.cityChosen = $item.data('id');
+      console.log(state);
+      input.val($item.html()).attr('readonly', 'readonly');
+      list.addClass('hidden');
+    }, {
+      cityChosen: null
+    });
+
+    ajaxSearch( 'search-style', 'list-styles', 'styles', true, function($item, input, list, state) {
+      console.log($item, input, list, state);
+      // var $item = $(this);
+      // console.log($item);
+      var id = $item.data('id');
+      var name = $item.html();
+      console.log(id, name);
+      state.selectedStyles.append('<li data-id="' + id + '"><span class="label label-primary">' + name + '</span></li>');
+      // state.selectedStyles.append('<li>toto</li>');
+    }, { selectedStyles: $( '#selected-styles' ) } );
+
 });
 
 </script>
