@@ -17,6 +17,11 @@ $app->get('/search', function (Request $request, Response $response, $args) use 
 $searchClosure = function (Request $request, Response $response, $args) use ($app) {
     $route = $request->getAttribute('route');
     $searchWhat = $route->getArgument('what');
+    $fields = $request->getParam('fields');
+    $fieldsArr = explode( ',', $fields );
+
+    $fields = empty($fields) ? ['id', 'name'] :
+        array_merge(['id'], $fieldsArr);
 
     $validTypes = [
         'cities' => 'City',
@@ -29,11 +34,14 @@ $searchClosure = function (Request $request, Response $response, $args) use ($ap
 
     $searchTerm = $request->getParam('s');
     $searchResults = $typeClass::where('name', 'LIKE', "{$searchTerm}%")->limit(10)->get();
-    $mappedResults = $searchResults->map( function( $item ) {
-        return [
-            'id' => $item->id,
-            'name' => $item->name
+    $mappedResults = $searchResults->map( function( $item ) use($fields) {
+        $mapped = [
+            'id' => $item->id
         ];
+        foreach( $fields as $f ) {
+            $mapped[$f] = $item->$f;
+        }
+        return $mapped;
     } );
     $data = [
         'items' => $mappedResults

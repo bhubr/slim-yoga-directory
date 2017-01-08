@@ -25,7 +25,7 @@
             <input name="name" type="text" class="input-small" placeholder="Name" />
             <input name="street_address" type="text" class="input-small" placeholder="Address" />
             <input name="postcode" type="text" class="input-small" placeholder="Post Code" />
-            <input name="city" type="text" class="input-small" placeholder="City" />
+            <input id="city" name="city" type="text" class="input-small" placeholder="City" />
             <input name="phone" type="text" class="input-small" placeholder="Phone" />
             <select name="country_id" class="input-small">
               <option value="1">France</option>
@@ -47,6 +47,8 @@
               <i class="ace-icon fa fa-key bigger-110"></i>Create
             </button>
           </form>
+          <ul id="list-cities" class="list hidden"></ul>
+
 
 
           <!-- PAGINATION BEGINS -->
@@ -246,8 +248,13 @@
 {% endblock %}
 
 {% block custom_js %}
+<script src="/assets/common/js/jquery.quicksearch.js"></script>
+<script src="/assets/common/js/ajaxsearch.js"></script>
 <script>
+
   $(document).ready(function() {
+    // var parser = new DOMParser();
+
     $('.show-details-btn').on('click', function(e) {
       e.preventDefault();
       $(this).closest('tr').next().toggleClass('open');
@@ -258,14 +265,47 @@
       e.preventDefault();
       var form = $(e.target);
       var pid = form.data('pid');
-      // var prefix = 'input[name="polish[' + pid + ']';
       $.post(form.attr('action'), form.serialize(), data => {
-        // console.log(prefix + '[image_url]"]');
-        // form.find(prefix + '[image_url]"]').value(data.image_url);
         console.log('#thumb-' + pid, $('#thumb-' + pid), data.image_url);
         $('#thumb-' + pid).attr('src', data.image_url);
       }, 'json');
     });
+
+    ajaxSearch( 'city', 'list-cities', 'cities', false, function($item, input, list, state) {
+      var data = $item.data('attrs');
+      var fieldNames = ['postcode', 'latitude', 'longitude'];
+      var query = encodeURI( $('input[name="street_address"]').val() ) + '%2C' + data.slug;
+      var osmQuery = 'www.openstreetmap.org/search?query=' + query + '#map=14/' + data.latitude + '/' + data.longitude;
+      fieldNames.forEach( function(name) {
+        $('input[name="' + name + '"]').val( data[name] );
+      });
+      $('input[name="map_link"]').val( osmQuery );
+      state.cityChosen = $item.data('id');
+    }, {
+      cityChosen: null
+    }, { fields: ['name', 'slug', 'postcode', 'latitude', 'longitude'] });
+
+    $('textarea[name="map_embed"]').on( 'input', function() {
+      var html = $(this).val();
+      var el = document.createElement( 'html' );
+      var links;
+      var hrefNode;
+      var link;
+      var segments;
+      var latitude;
+      var longitude;
+
+      el.innerHTML = html;
+      links = el.getElementsByTagName( 'a' ); // Live NodeList of your anchor elements
+      href = links[0].attributes.getNamedItem('href');
+      link = href.nodeValue;
+      segments = link.split('/');
+      longitude = segments.pop();
+      latitude = segments.pop();
+      $('input[name="latitude"]').val(latitude);
+      $('input[name="longitude"]').val(longitude);
+    });
+
   });
 </script>
 {% endblock %}

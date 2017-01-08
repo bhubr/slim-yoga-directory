@@ -80,50 +80,9 @@ ul.list li:hover {
 {% endblock %}
 
 {% block scripts %}
-<script src="/assets/front/jquery.quicksearch.js"></script>
+<script src="/assets/common/js/jquery.quicksearch.js"></script>
+<script src="/assets/common/js/ajaxsearch.js"></script>
 <script>
-function ajaxSearch( _inputId, _listId, _searchWhat, _searchOnStart, _selectCallback, _state ) {
-  (function( inputId, listId, searchWhat, searchOnStart, selectCallback, state ) {
-    var input = $('#' + inputId);
-    var list = $('#' + listId);
-    var qs = input.quicksearch('ul#' + listId + ' li');
-
-    function bindListItemEvents() {
-      list.find('li').click( function(e) {
-        console.log(e);
-        selectCallback( $(e.target), input, list, state );
-      } );
-    }
-
-    function fireAjaxSearch(searchTerm) {
-      searchTerm = searchTerm !== undefined ? searchTerm : '';
-      $.ajax({
-        'url': '/search/' + searchWhat + '?s=' + searchTerm,
-        'type': 'GET',
-        'dataType': 'json',
-        'success': function (data) {
-          list.removeClass('hidden');
-          list.find('li').remove();
-          for (i in data['items']) {
-              var item = data['items'][i];
-              list.append('<li data-id="' + item['id'] + '">' + item['name'] + '</li>');
-          }
-          bindListItemEvents();
-          qs.cache();
-        }
-      });
-    }
-      
-    input.on('input', function() {
-      fireAjaxSearch( input.val() );
-    });
-
-    if( searchOnStart ) {
-      fireAjaxSearch();
-    }
-  })( _inputId, _listId, _searchWhat, _searchOnStart, _selectCallback, _state );
-}
-
 
 $(document).ready( function() {
     // input = $('input#search-city');
