@@ -108,8 +108,9 @@
       var latitude;
       var longitude;
 
+      // http://stackoverflow.com/questions/10585029/parse-a-html-string-with-js
       el.innerHTML = html;
-      links = el.getElementsByTagName( 'a' ); // Live NodeList of your anchor elements
+      links = el.getElementsByTagName('a');
       href = links[0].attributes.getNamedItem('href');
       link = href.nodeValue;
       segments = link.split('/');
