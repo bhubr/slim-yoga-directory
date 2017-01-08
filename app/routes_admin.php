@@ -155,6 +155,30 @@ $app->get('/admin/schools/{slug}', function (Request $request, Response $respons
     return $response;
 } );
 
+$app->post('/admin/schools/{slug}', function (Request $request, Response $response, $args) use ($app) {
+    $route = $request->getAttribute('route');
+    $slug = $route->getArgument('slug');
+    $entry = School::where('slug', '=', $slug)->first();
+
+    $params = $request->getParams();
+
+    if (array_key_exists('places', $params)) {
+        $placeIds = array_keys($params['places']);
+        foreach( $placeIds as $placeId ) {
+            $entry->places()->attach($placeId);
+        }
+    }
+
+    $newValues = [
+        'name' => $params['name'],
+        'slug' => $params['slug'],
+    ];
+    $entry->fill($newValues);
+    $entry->save();
+
+    return $response;
+} );
+
 
 
 $app->post('/admin/users', function (Request $request, Response $response, $args) use ($app) {

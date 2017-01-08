@@ -25,7 +25,8 @@ $searchClosure = function (Request $request, Response $response, $args) use ($ap
 
     $validTypes = [
         'cities' => 'City',
-        'styles' => 'Style'
+        'styles' => 'Style',
+        'places' => 'Place'
     ];
     if( ! array_key_exists($searchWhat, $validTypes) ) {
         return $response->write('Not Found')->withStatus(404);

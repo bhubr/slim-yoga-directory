@@ -25,9 +25,24 @@
             <input name="name" type="text" class="input" placeholder="Name" value="{{ entry.name }}" />
             <input name="slug" type="text" class="input" placeholder="Name" value="{{ entry.slug }}" />
 
+            <ul id="selected-places" class="inline-list"></ul>
+
             <button type="submit" class="btn btn-info btn-sm">
               <i class="ace-icon fa fa-key bigger-110"></i>Update
             </button>
+          </form>
+
+          <form id="placeSearchForm">
+            <fieldset>
+              <legend>Search place</legend>
+              <div class="col-md-12 form-group">
+                <input id="search-place" class="form-control" placeholder="Enter place name" name="name" type="name" value="">
+              </div>
+            </fieldset>
+
+            <div class="col-md-12 form-group">
+              <ul id="list-places" class="list "></ul>
+            </div>
           </form>
 
         </div><!-- /.span -->
@@ -39,6 +54,9 @@
 {% endblock %}
 
 {% block custom_js %}
+<script src="/assets/common/js/jquery.quicksearch.js"></script>
+<script src="/assets/common/js/ajaxsearch.js"></script>
+
 <script>
   $(document).ready(function() {
     $('.show-details-btn').on('click', function(e) {
@@ -51,14 +69,20 @@
       e.preventDefault();
       var form = $(e.target);
       var pid = form.data('pid');
-      // var prefix = 'input[name="polish[' + pid + ']';
       $.post(form.attr('action'), form.serialize(), data => {
-        // console.log(prefix + '[image_url]"]');
-        // form.find(prefix + '[image_url]"]').value(data.image_url);
         console.log('#thumb-' + pid, $('#thumb-' + pid), data.image_url);
         $('#thumb-' + pid).attr('src', data.image_url);
       }, 'json');
+
+
     });
+
+    ajaxSearch( 'search-place', 'list-places', 'places', true, function($item, input, list, state) {
+      var id = $item.data('id');
+      var name = $item.html();
+      state.selectedPlaces.append('<li data-id="' + id + '"><input type="checkbox" name="places[' + id + ']" checked="checked"> ' + name + ' - ' + id + '</span></li>');
+    }, { selectedPlaces: $( '#selected-places' ) } );
+
   });
 </script>
 {% endblock %}
