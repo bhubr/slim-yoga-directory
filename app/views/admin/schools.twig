@@ -101,7 +101,7 @@
                   <a href="#">{{ entry.name }}</a>
                 </td>
                 <td>{{ entry.slug }}</td>
-                <td><ul>{% for place in entry.places %}<li><a href="{{ place.map_link }}" target="_blank">{{ place.name }}, {{ place.city }}</a></li>{% endfor %}</ul></td>
+                <td><ul>{% for place in entry.places %}<li><a href="{{ place.map_link }}" target="_blank">{{ place.name }}, {{ place.city.name }}</a></li>{% endfor %}</ul></td>
                 <td>{{ entry._map_embed|raw }}fix</td>
                 <td>Feb 12</td>
 
