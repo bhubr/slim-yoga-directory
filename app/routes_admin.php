@@ -4,9 +4,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Cartalyst\Sentinel\Users\EloquentUser;
 use Illuminate\Support\Str;
 
-require 'models/Place.php';
-require 'models/School.php';
-
 $app->get('/admin', function (Request $request, Response $response, $args) use ($app) {
     $loggedUser = $app->getContainer()->sentinel->check();
 
@@ -136,6 +133,31 @@ $app->post('/admin/users', function (Request $request, Response $response, $args
         $place = EloquentUser::create($attributes);
         // $place->country()->associate($country);
         // $place->save();
+    } catch( \Exception $e ) {
+        die( $e->getMessage() . " " . $e->getCode() );
+    }
+    $uri = $request->getUri();
+    return $response = $response->withRedirect($uri); //, 403);
+} );
+
+$app->get('/admin/styles', function (Request $request, Response $response, $args) use ($app) {
+    $name = $request->getAttribute('csrf_name');
+    $value = $request->getAttribute('csrf_value');
+
+    $entries = Style::all();
+    $this->view->render($response, 'admin/styles.twig', [
+        'entries'   => $entries,
+        'csrfName' => $name,
+        'csrfValue' => $value
+    ]);
+    return $response;
+} );
+
+$app->post('/admin/styles', function (Request $request, Response $response, $args) use ($app) {
+    $attributes = $request->getParsedBody();
+    $attributes['slug'] = Str::slug($attributes['name']);
+    try {
+        $style = Style::create($attributes);
     } catch( \Exception $e ) {
         die( $e->getMessage() . " " . $e->getCode() );
     }

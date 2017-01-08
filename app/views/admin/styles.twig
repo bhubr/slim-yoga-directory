@@ -1,0 +1,239 @@
+{% extends "admin/layout.html" %}
+
+{% block content %}
+  <div class="page-header">
+    <h1>
+      Yoga Styles
+      <small>
+        <i class="ace-icon fa fa-angle-double-right"></i>
+        overview &amp; stats
+      </small>
+    </h1>
+  </div><!-- /.page-header -->
+
+  <div class="row">
+    <div class="col-xs-12">
+      <!-- PAGE CONTENT BEGINS -->
+      <div class="row">
+        <div class="col-xs-12">
+
+          <!-- QUICK CREATE -->
+          <form class="form-inline" id="quick-create-form" method="POST" action="/admin/styles">
+            <input type="hidden" name="csrf_name" value="{{ csrfName }}">
+            <input type="hidden" name="csrf_value" value="{{ csrfValue }}">
+
+            <input name="name" type="text" class="input-small" placeholder="Name" />
+
+            <button type="submit" class="btn btn-info btn-sm">
+              <i class="ace-icon fa fa-key bigger-110"></i>Create
+            </button>
+          </form>
+
+
+          <!-- PAGINATION BEGINS -->
+          <ul class="pagination">
+            <li class="disabled">
+              <a href="#">
+                <i class="ace-icon fa fa-angle-double-left"></i>
+              </a>
+            </li>
+
+
+
+            {% for i in range(1, entries.lastPage) %}
+              <li{% if currentPage == i %} class="active"{% endif %}>
+                <a href="{{ url }}?page={{ i }}">{{ i }}</a>
+              </li>
+              {% endfor %}
+
+            <li>
+              <a href="#">
+                <i class="ace-icon fa fa-angle-double-right"></i>
+              </a>
+            </li>
+          </ul>
+          <!-- PAGINATION ENDS -->
+
+          <table id="simple-table" class="table  table-bordered table-hover">
+            <thead>
+              <tr>
+                <th class="center">
+                  <label class="pos-rel">
+                    <input type="checkbox" class="ace" />
+                    <span class="lbl"></span>
+                  </label>
+                </th>
+                <th class="detail-col">Details</th>
+                <th>Name</th>
+                <th>Slug</th>
+
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody>
+            {% for entry in entries %}
+              <tr>
+                <td class="center">
+                  <label class="pos-rel">
+                    <input type="checkbox" class="ace" />
+                    <span class="lbl"></span>
+                  </label>
+                </td>
+
+                <td class="center">
+                  <div class="action-buttons">
+                    <a href="#" class="green bigger-140 show-details-btn" title="Show Details">
+                      <i class="ace-icon fa fa-angle-double-down"></i>
+                      <span class="sr-only">Details</span>
+                    </a>
+                  </div>
+                </td>
+
+                <td>
+                  <a href="#">{{ entry.name }}</a>
+                </td>
+                <td>{{ entry.slug }}</td>
+
+                <td>
+                  <div class="hidden-sm hidden-xs btn-group">
+                    <button class="btn btn-xs btn-success">
+                      <i class="ace-icon fa fa-check bigger-120"></i>
+                    </button>
+
+                    <button class="btn btn-xs btn-info">
+                      <i class="ace-icon fa fa-pencil bigger-120"></i>
+                    </button>
+
+                    <button class="btn btn-xs btn-danger">
+                      <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                    </button>
+
+                    <button class="btn btn-xs btn-warning">
+                      <i class="ace-icon fa fa-flag bigger-120"></i>
+                    </button>
+                  </div>
+
+                  <div class="hidden-md hidden-lg">
+                    <div class="inline pos-rel">
+                      <button class="btn btn-minier btn-primary dropdown-toggle" data-toggle="dropdown" data-position="auto">
+                        <i class="ace-icon fa fa-cog icon-only bigger-110"></i>
+                      </button>
+
+                      <ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">
+                        <li>
+                          <a href="#" class="tooltip-info" data-rel="tooltip" title="View">
+                            <span class="blue">
+                              <i class="ace-icon fa fa-search-plus bigger-120"></i>
+                            </span>
+                          </a>
+                        </li>
+
+                        <li>
+                          <a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">
+                            <span class="green">
+                              <i class="ace-icon fa fa-pencil-square-o bigger-120"></i>
+                            </span>
+                          </a>
+                        </li>
+
+                        <li>
+                          <a href="#" class="tooltip-error" data-rel="tooltip" title="Delete">
+                            <span class="red">
+                              <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                            </span>
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+
+              <tr class="detail-row">
+                <td colspan="8">
+                  <div class="table-detail">
+                    <div class="row">
+                      <div class="col-xs-12 col-sm-2">
+                        <div class="text-center">
+                          <img height="150" id="thumb-{{ entry.id }}" class="thumbnail inline no-margin-bottom" alt="{{ entry.name }}" src="{{ entry.image_url }}" />
+                          <br />
+                          <div class="width-80 label label-info label-xlg">
+                            <div class="inline position-relative">
+                                &nbsp;
+                                <span class="white">{{ entry.name }}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-xs-12 col-sm-7">
+                        <div class="space visible-xs"></div>
+
+                        <form class="form-horizontal quick-edit-form" role="form" method="POST" action="/admin/polishes/{{ entry.id }}" data-pid="{{ entry.id }}">
+
+                          <div class="profile-user-info profile-user-info-striped">
+                            <div class="profile-info-row">
+                              <div class="profile-info-name"> Name </div>
+
+                              <div class="profile-info-value">
+                                <!-- <span>alexdoe</span> -->
+                                <input name="polish[{{ entry.id }}][name]" type="text" id="form-field-1" placeholder="Polish name" class="input-xs" value="{{ entry.name }}" />
+                              </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                              <div class="profile-info-name"> Image URL </div>
+
+                              <div class="profile-info-value">
+                                <!-- <span>alexdoe</span> -->
+                                <input name="polish[{{ entry.id }}][image_url]" type="text" id="form-field-1" placeholder="Image URL" class="input-xs" value="{{ entry.image_url }}" />
+                              </div>
+                            </div>
+
+                            <button class="btn btn-xs btn-primary">Update</button>
+
+                          </div>
+
+                        </form>
+                      </div>
+
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div><!-- /.span -->
+      </div><!-- /.row -->
+
+      <!-- PAGE CONTENT ENDS -->
+    </div><!-- /.col -->
+  </div><!-- /.row -->
+{% endblock %}
+
+{% block custom_js %}
+<script>
+  $(document).ready(function() {
+    $('.show-details-btn').on('click', function(e) {
+      e.preventDefault();
+      $(this).closest('tr').next().toggleClass('open');
+      $(this).find(ace.vars['.icon']).toggleClass('fa-angle-double-down').toggleClass('fa-angle-double-up');
+    });
+
+    $('.quick-edit-form').on('submit', function(e) {
+      e.preventDefault();
+      var form = $(e.target);
+      var pid = form.data('pid');
+      // var prefix = 'input[name="polish[' + pid + ']';
+      $.post(form.attr('action'), form.serialize(), data => {
+        // console.log(prefix + '[image_url]"]');
+        // form.find(prefix + '[image_url]"]').value(data.image_url);
+        console.log('#thumb-' + pid, $('#thumb-' + pid), data.image_url);
+        $('#thumb-' + pid).attr('src', data.image_url);
+      }, 'json');
+    });
+  });
+</script>
+{% endblock %}

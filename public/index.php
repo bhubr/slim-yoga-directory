@@ -15,6 +15,10 @@ $app = new \Slim\App([
 $app->add(new \Zeuxisoo\Whoops\Provider\Slim\WhoopsMiddleware);
 
 require_once '../app/models/City.php';
+require_once '../app/models/Place.php';
+require_once '../app/models/School.php';
+require_once '../app/models/Style.php';
+
 // Register bindings
 include_once __DIR__.'/../app/bootstrap/container.php';
 // Register routes
