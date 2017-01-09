@@ -83,7 +83,7 @@
       }, 'json');
     });
 
-    ajaxSearch( 'city', 'list-cities', 'cities', false, function($item, input, list, state) {
+    ajaxSearch( 'city', 'list-cities', '/search/cities', false, function($item, input, list, state) {
       var data = $item.data('attrs');
       var fieldNames = ['postcode', 'latitude', 'longitude'];
       var query = encodeURI( $('input[name="street_address"]').val() ) + '%2C' + data.slug;

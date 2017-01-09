@@ -24,6 +24,8 @@ $app->get('/search', function (Request $request, Response $response, $args) use 
         'inputId'   => 'search-cities-2',
         'listId'   => 'list-cities-2',
         'placeholder'   => 'I am input #search-cities-2',
+        'renderInput' => false,
+        'multi' => true,
     ]);
 
     $components = TwigComponents::getInstance();
@@ -33,7 +35,8 @@ $app->get('/search', function (Request $request, Response $response, $args) use 
 
     $app->getContainer()->view->render($response, 'search.html.twig', [
         'csrfName' => $name,
-        'csrfValue' => $value
+        'csrfValue' => $value,
+        'ts' => time()
     ]);
     return $response;
 });
@@ -105,3 +108,9 @@ $searchClosure = function (Request $request, Response $response, $args) use ($ap
 };
 
 $app->get('/search/{what}', $searchClosure);
+
+$app->get('/search-places', function(Request $request, Response $response, $args) {
+    $params = $request->getParams();
+    $places = Place::where('city_id', '=', $params['city_id'] )->limit(10)->get();
+    return $response->withJson(['items' =>$places]);
+});

@@ -1,7 +1,11 @@
 {% extends "app.html.twig" %}
 
 {% block styles %}
-
+<style>
+input.debug {
+  border: 1px solid red;
+}
+</style>
 
 {{ renderStyles() }}
 {% endblock %}
@@ -75,7 +79,7 @@
 
 {% block scripts %}
 <script src="/assets/common/js/jquery.quicksearch.js"></script>
-<script src="/assets/common/js/ajaxsearch.js"></script>
+<script src="/assets/common/js/ajaxsearch.js?ts={{ ts }}"></script>
 
 {{ renderScripts() }}
 <script>
@@ -92,7 +96,7 @@ $(document).ready( function() {
         }
     });
 
-    ajaxSearch( 'search-city', 'list-cities', 'cities', false, function($item, input, list, state) {
+    ajaxSearch( 'search-city', 'list-cities', '/search/cities', false, function($item, input, list, state) {
       state.cityChosen = $item.data('id');
       input.val($item.html()).attr('readonly', 'readonly');
       list.addClass('hidden');
@@ -103,13 +107,13 @@ $(document).ready( function() {
       cityChosen: null
     });
 
-    ajaxSearch( 'search-style', 'list-styles', 'styles', true, function($item, input, list, state) {
+    ajaxSearch( 'search-style', 'list-styles', '/search/styles', true, function($item, input, list, state) {
       var id = $item.data('id');
       var name = $item.html();
       state.selectedStyles.append('<li data-id="' + id + '"><span class="label label-primary">' + name + '</span></li>');
-    }, { selectedStyles: $( '#selected-styles' ) } );
+    }, { selectedStyles: $( '#selected-styles' ) }, { multi: true } );
 
-    ajaxSearch( 'search-place', 'search-results', 'places', true, function($item, input, list, state) {
+    ajaxSearch( 'search-place', 'search-results', '/search/places', true, function($item, input, list, state) {
       var id = $item.data('id');
       var name = $item.html();
       // $('#search-results li').show();

@@ -77,7 +77,7 @@
 
     });
 
-    ajaxSearch( 'search-place', 'list-places', 'places', true, function($item, input, list, state) {
+    ajaxSearch( 'search-place', 'list-places', '/search/places', true, function($item, input, list, state) {
       var id = $item.data('id');
       var name = $item.html();
       state.selectedPlaces.append('<li data-id="' + id + '"><input type="checkbox" name="places[' + id + ']" checked="checked"> ' + name + ' - ' + id + '</span></li>');
