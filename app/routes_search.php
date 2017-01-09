@@ -25,7 +25,9 @@ $app->get('/search', function (Request $request, Response $response, $args) use 
         'listId'   => 'list-cities-2',
         'placeholder'   => 'I am input #search-cities-2',
         'renderInput' => false,
+        'tagWrap' => 'div',
         'multi' => true,
+        'template' => 'prout'
     ]);
 
     $components = TwigComponents::getInstance();
@@ -36,7 +38,17 @@ $app->get('/search', function (Request $request, Response $response, $args) use 
     $app->getContainer()->view->render($response, 'search.html.twig', [
         'csrfName' => $name,
         'csrfValue' => $value,
-        'ts' => time()
+        'ts' => time(),
+        'hbsTemplate' => '  {{#each items}}
+        <div class="row">
+          <div class="col-md-5">
+            <h4>{{ name }}</h4>
+            <p>Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras que mira su diseño. El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras, al contrario de usar textos como por ejemplo "Contenido aquí, contenido aquí". Estos textos hacen parecerlo un español que se puede leer.</p>
+          </div>
+          <div class="col-md-7">{{{ map_embed }}}</div>
+        </div>
+  {{/each}}
+'
     ]);
     return $response;
 });

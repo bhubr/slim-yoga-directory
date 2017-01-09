@@ -5,12 +5,17 @@ function ajaxSearch( _inputId, _listId, _searchUrl, _searchOnStart, _selectCallb
     var list = $('#' + listId);
     var multi = !!options && !!options.multi;
     var otherInputs = ( !!options && !!options.otherInputs ) ? options.otherInputs : {};
+    var template;
     var searchTerms = {};
     var selected = [];
-    // console.log(inputId, multi ? 'is multi' : 'is not multi', otherInputs);
+
+    if( !!options && !!options.template ) {
+      var source = $("#" + options.template).html();
+      template = Handlebars.compile(source);
+    }
 
     var dbgId = 'dbg-' + inputId;
-    var dbgInput = $('<input class="debug" id="' + dbgId + '" />').appendTo(input.parent());
+    var dbgInput = $('<input type="hidden" class="debug" id="' + dbgId + '" />').appendTo(input.parent());
     // var qs = input.quicksearch('ul#' + listId + ' li');
 
     function bindListItemEvents() {
@@ -26,22 +31,15 @@ function ajaxSearch( _inputId, _listId, _searchUrl, _searchOnStart, _selectCallb
         else {
           selected = [id];
         }
-        console.log( 'selected', id, selected );
         dbgInput.val( selected.join( ',' ) );
-
         $(window).trigger('ajaxfilter:' + dbgId, [selected]);
-        // console.log('TRIGGER', 'ajaxfilter:' + dbgId);
       } );
     }
 
     function fireAjaxSearch(extraData) {
-      // var searchTerm = searchTerm !== undefined ? searchTerm : '';
-      console.log('FIRE', $('#' + inputId), $('#' + inputId).attr( 'name' ));
-      // var searchTerms = {};
       var searchStrings = [];
       var inputName = input.attr( 'name' );
       extraData = extraData || {};
-      console.log('extra', extraData);
       if( !!inputName ) {
         searchTerms[inputName]= input.val();
       }
@@ -59,13 +57,18 @@ function ajaxSearch( _inputId, _listId, _searchUrl, _searchOnStart, _selectCallb
         'success': function (data) {
           list.removeClass('hidden');
           list.find('li').remove();
-          for (var i in data['items']) {
-              var item = data['items'][i];
-              var id = item['id'];
-              var listItem;
-              delete item.id;
-              listItem = $('<li data-id="' + id + '">' + item['name'] + '</li>').appendTo(list).css('display', 'block');
-              $(listItem).data('attrs', item);
+          if(template) {
+            list.html(template({ items: data['items'], body: 'cool', title: 'awesome'}));
+          }
+          else {
+            for (var i in data['items']) {
+                var item = data['items'][i];
+                var id = item['id'];
+                var listItem;
+                delete item.id;
+                listItem = $('<li data-id="' + id + '">' + item['name'] + '</li>').appendTo(list).css('display', 'block');
+                $(listItem).data('attrs', item);
+            }
           }
           bindListItemEvents();
           // qs.cache();
@@ -76,22 +79,14 @@ function ajaxSearch( _inputId, _listId, _searchUrl, _searchOnStart, _selectCallb
     for( var _inputId in otherInputs ) {
       var mapTo = otherInputs[_inputId];
       var dbgId = 'dbg-' + _inputId;
-      console.log( 'SETUP CHANGE', inputId, '=>', mapTo, ': ', $('#dbg-' + inputId), 'ajaxfilter:' + dbgId );
-      // $('#dbg-' + inputId).change(function() {
-      //   console.log( 'DETECT CHANGE', inputId, '=>', mapTo, ': ', $(this).val() );
-      // });
-
       var cb = ( function(_mapTo) {
-        return function(event, data) { console.log('filter RECV', _inputId, mapTo, data);
+        return function(event, data) {
           searchTerms[_mapTo] = data;
           fireAjaxSearch();
          };
       } )(mapTo);
-      $(window).on('ajaxfilter:' + dbgId, cb
-        
 
-        
-      );
+      $(window).on('ajaxfilter:' + dbgId, cb);
     }
     input.on('input', fireAjaxSearch);
 

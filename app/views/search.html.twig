@@ -2,9 +2,9 @@
 
 {% block styles %}
 <style>
-input.debug {
+/*input.debug {
   border: 1px solid red;
-}
+}*/
 </style>
 
 {{ renderStyles() }}
@@ -60,13 +60,11 @@ input.debug {
     <div class="col-md-10 col-md-offset-1">
       <div class="login-panel panel panel-default">
         <div class="panel-body">
-        <h3>Search results</h3>
-        <ul id="search-results" class="list">
-        </ul>
 
-        <input id="search-place" name="city_id" type="hidden" />
-
-        {{ renderHtml('c3') }}
+          <h3>Search results</h3>
+          <!-- <ul id="search-results" class="list"></ul>
+          <input id="search-place" name="city_id" type="hidden" /> -->
+          {{ renderHtml('c3') }}
 
         </div> <!-- .panel-body -->
       </div> <!-- .panel -->
@@ -75,12 +73,16 @@ input.debug {
   </div> <!-- .panel-wrapper -->
 </div> <!-- .container -->
 
+<script id="entry-template" type="text/x-handlebars-template">
+  {{ hbsTemplate|raw }}
+</script>
+
 {% endblock %}
 
 {% block scripts %}
 <script src="/assets/common/js/jquery.quicksearch.js"></script>
 <script src="/assets/common/js/ajaxsearch.js?ts={{ ts }}"></script>
-
+<script src="/assets/front/handlebars-v4.0.5.js"></script>
 {{ renderScripts() }}
 <script>
 
@@ -113,12 +115,10 @@ $(document).ready( function() {
       state.selectedStyles.append('<li data-id="' + id + '"><span class="label label-primary">' + name + '</span></li>');
     }, { selectedStyles: $( '#selected-styles' ) }, { multi: true } );
 
-    ajaxSearch( 'search-place', 'search-results', '/search/places', true, function($item, input, list, state) {
-      var id = $item.data('id');
-      var name = $item.html();
-      // $('#search-results li').show();
-      // state.selectedStyles.append('<li data-id="' + id + '"><span class="label label-primary">' + name + '</span></li>');
-    }, {} );
+    // ajaxSearch( 'search-place', 'search-results', '/search/places', true, function($item, input, list, state) {
+    //   var id = $item.data('id');
+    //   var name = $item.html();
+    // }, {} );
 
 });
 

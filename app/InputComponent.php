@@ -12,7 +12,8 @@ class InputComponent implements ComponentInterface {
     public function __construct( $properties = [] ) {
         $defaults = [
             'multi' => false,
-            'renderInput' => true
+            'renderInput' => true,
+            'tagWrap' => 'ul'
         ];
         foreach( $defaults as $k => $v ) {
             if( !array_key_exists($k, $properties) ) {
@@ -25,16 +26,16 @@ class InputComponent implements ComponentInterface {
     public function renderHtml() {
         extract($this->properties);
         $output = '';
-        $output .=  "<h4>Input component #$inputId</h4>";
-        $output .=  "<ul class='pouet-component'>";
-        foreach( $this->properties as $k => $v ) {
-            $output .= "<li>$k => $v</li>";
-        }
-        $output .= "</ul>";
+        // $output .=  "<h4>Input component #$inputId</h4>";
+        // $output .=  "<ul class='pouet-component'>";
+        // foreach( $this->properties as $k => $v ) {
+        //     $output .= "<li>$k => $v</li>";
+        // }
+        // $output .= "</ul>";
         if( $renderInput ) {
             $output .= "<input id=\"$inputId\" class=\"form-control\" placeholder=\"$placeholder\" name=\"totoname\" type=\"name\" value=\"\">";    
         }
-        $output .= "<ul id=\"$listId\" class=\"list\"></ul>";
+        $output .= "<$tagWrap id=\"$listId\" class=\"list\"></$tagWrap>";
         return $output;
     }
 
@@ -67,7 +68,7 @@ class InputComponent implements ComponentInterface {
         return '$(document).ready( function() {
             ajaxSearch( "' .$inputId .'", "' .$listId .'", "/search-places", true, function($item, input, list, state) {
               console.log(input.attr("id"));
-            }, {}, { multi: ' . $multi . ', otherInputs: { "search-city": "city_id", "search-style": "styles" } } );
+            }, {}, { multi: ' . $multi . ', otherInputs: { "search-city": "city_id", "search-style": "styles" }, template: "entry-template" } );
         } );';
     }
 }
